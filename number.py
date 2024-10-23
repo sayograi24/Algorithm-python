@@ -1,9 +1,10 @@
 import tkinter as tk
+import random
 
-class SmartNumberGame:
+class NumberGame:
     def __init__(self, master):
         self.master = master
-        self.master.title("Smart Number Game")
+        self.master.title("Number Game")
         self.buttons = []
         self.create_buttons()
         self.reset_game()
@@ -34,50 +35,15 @@ class SmartNumberGame:
                 self.ai_move()
 
     def ai_move(self):
-        best_score = float('-inf')
-        best_move = None
-        for i in range(9):
-            if self.buttons[i]["text"] == "":
-                self.buttons[i].config(text='O')
-                score = self.minimax(0, False)
-                self.buttons[i].config(text="")
-                if score > best_score:
-                    best_score = score
-                    best_move = i
-        if best_move is not None:
-            self.buttons[best_move].config(text='O')
-            if self.check_winner('O'):
-                self.show_winner('O')
+        available_moves = [i for i in range(9) if self.buttons[i]["text"] == ""]
+        if available_moves:
+            move = random.choice(available_moves)
+            self.buttons[move].config(text=self.current_player)
+            if self.check_winner(self.current_player):
+                self.show_winner(self.current_player)
                 self.disable_buttons()
             else:
                 self.current_player = 'X'
-
-    def minimax(self, depth, is_maximizing):
-        if self.check_winner('O'):
-            return 1
-        elif self.check_winner('X'):
-            return -1
-        elif all(button["text"] != "" for button in self.buttons):
-            return 0
-
-        if is_maximizing:
-            best_score = float('-inf')
-            for i in range(9):
-                if self.buttons[i]["text"] == "":
-                    self.buttons[i].config(text='O')
-                    score = self.minimax(depth + 1, False)
-                    self.buttons[i].config(text="")
-                    best_score = max(score, best_score)
-            return best_score
-        else:
-            best_score = float('inf')
-            for i in range(9):
-                if self.buttons[i]["text"] == "":
-                    self.buttons[i].config(text='X')
-                    score = self.minimax(depth + 1, True)
-                    self.buttons[i].config(text="")
-                    best_score = min(score, best_score)
-            return best_score
 
     def check_winner(self, player):
         win_conditions = [
@@ -101,5 +67,5 @@ class SmartNumberGame:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    game = SmartNumberGame(root)
+    game = NumberGame(root)
     root.mainloop()
